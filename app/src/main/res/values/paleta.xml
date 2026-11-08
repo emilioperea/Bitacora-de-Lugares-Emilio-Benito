@@ -21,4 +21,6 @@
 
     <color name="fondo_logo">#FFF4E3</color>
     <color name="rojo_logo">#EA503D</color>
+
+    <color name="campo">#EEF1EF</color>
 </resources>

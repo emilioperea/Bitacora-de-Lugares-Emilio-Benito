@@ -5,15 +5,165 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/fondo"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <EditText
+        android:id="@+id/edtBuscar"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/alto_campo"
+        android:layout_marginStart="@dimen/margen"
+        android:layout_marginTop="@dimen/margen"
+        android:layout_marginEnd="@dimen/margen"
+        android:background="@drawable/fondo_busqueda"
+        android:drawableStart="@drawable/ic_buscar"
+        android:drawablePadding="@dimen/margen_chico"
+        android:drawableTint="@color/texto_secundario"
+        android:hint="@string/hint_buscar"
+        android:imeOptions="actionSearch"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:maxLines="1"
+        android:paddingStart="@dimen/margen"
+        android:paddingEnd="@dimen/margen"
+        android:textColor="@color/texto"
+        android:textColorHint="@color/texto_secundario"
+        android:textSize="@dimen/texto_normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <HorizontalScrollView
+        android:id="@+id/hsvCategorias"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margen_chico"
+        android:scrollbars="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtBuscar">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/cgpCategorias"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/margen"
+            android:paddingEnd="@dimen/margen"
+            app:checkedChip="@+id/chpTodas"
+            app:selectionRequired="true"
+            app:singleLine="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chpTodas"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/todas" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chpComida"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/comida" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chpPaisaje"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/paisaje" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chpEscuela"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/escuela" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chpOtro"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/otro" />
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/txtContador"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margen"
+        android:layout_marginTop="@dimen/margen_chico"
+        android:textColor="@color/texto_secundario"
+        android:textSize="@dimen/texto_chico"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hsvCategorias"
+        tools:text="3 paradas" />
+
+    <ListView
+        android:id="@+id/lvwParadas"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/margen_chico"
+        android:clipToPadding="false"
+        android:divider="@null"
+        android:dividerHeight="@dimen/espacio"
+        android:paddingStart="@dimen/margen"
+        android:paddingEnd="@dimen/margen"
+        android:paddingBottom="96dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtContador" />
+
+    <LinearLayout
+        android:id="@+id/llyVacio"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtContador">
+
+        <ImageView
+            android:id="@+id/imgVacio"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/ic_logo"
+            app:tint="@color/texto_secundario" />
+
+        <TextView
+            android:id="@+id/txtVacio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/espacio"
+            android:gravity="center"
+            android:text="@string/lista_vacia"
+            android:textColor="@color/texto_secundario"
+            android:textSize="@dimen/texto_normal" />
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabNuevaParada"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margen"
+        android:layout_marginBottom="24dp"
+        android:text="@string/nueva_parada"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:backgroundTint="@color/primario"
+        app:icon="@drawable/ic_agregar"
+        app:iconTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

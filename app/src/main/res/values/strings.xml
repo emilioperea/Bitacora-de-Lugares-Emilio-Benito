@@ -55,10 +55,18 @@
     <string name="acerca_mensaje">Guarda paradas de tus recorridos con una foto, la ubicación del GPS y una nota.\n\nProyecto final de Programación de Dispositivos Móviles.\n\nEmilio Perea Montes\nBenito Abi Ramírez Vázquez</string>
     <string name="cerrar">Cerrar</string>
 
+    <string name="contador_una">1 parada</string>
+    <string name="contador_varias">%1$d paradas</string>
+
+    <string name="comida">Comida</string>
+    <string name="paisaje">Paisaje</string>
+    <string name="escuela">Escuela</string>
+    <string name="otro">Otro</string>
+
     <string-array name="categorias">
-        <item>Comida</item>
-        <item>Paisaje</item>
-        <item>Escuela</item>
-        <item>Otro</item>
+        <item>@string/comida</item>
+        <item>@string/paisaje</item>
+        <item>@string/escuela</item>
+        <item>@string/otro</item>
     </string-array>
 </resources>

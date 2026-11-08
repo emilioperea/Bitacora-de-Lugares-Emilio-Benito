@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/superficie"
+    tools:context=".FormularioActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/tlbFormulario"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/primario"
+        android:minHeight="?attr/actionBarSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationContentDescription="@string/cancelar"
+        app:navigationIcon="@drawable/ic_regresar"
+        app:navigationIconTint="@color/white"
+        app:title="@string/nueva_parada"
+        app:titleTextColor="@color/white" />
+
+    <ScrollView
+        android:id="@+id/scvFormulario"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnGuardar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tlbFormulario">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/margen">
+
+            <FrameLayout
+                android:id="@+id/flyFoto"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/foto_formulario">
+
+                <LinearLayout
+                    android:id="@+id/llyTomarFoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/fondo_foto"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/imgCamara"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:contentDescription="@null"
+                        app:srcCompat="@drawable/ic_camara"
+                        app:tint="@color/texto" />
+
+                    <TextView
+                        android:id="@+id/txtTomarFoto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margen_chico"
+                        android:text="@string/tomar_foto"
+                        android:textColor="@color/texto"
+                        android:textSize="@dimen/texto_normal"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtAbreCamara"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/abre_camara"
+                        android:textColor="@color/texto_secundario"
+                        android:textSize="@dimen/texto_chico" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/imgFoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/fondo_redondeado"
+                    android:contentDescription="@string/foto_parada"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/btnOtraFoto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="@dimen/espacio"
+                    android:backgroundTint="@color/texto"
+                    android:text="@string/tomar_otra"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_camara"
+                    app:iconTint="@color/white" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/llyGps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/fondo_gps"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/margen"
+                android:paddingTop="@dimen/espacio"
+                android:paddingEnd="@dimen/margen_chico"
+                android:paddingBottom="@dimen/espacio">
+
+                <ProgressBar
+                    android:id="@+id/pgbGps"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:indeterminateTint="@color/primario" />
+
+                <ImageView
+                    android:id="@+id/imgGps"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/ic_logo"
+                    app:tint="@color/primario" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/espacio"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtGpsTitulo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/buscando_gps"
+                        android:textColor="@color/texto"
+                        android:textSize="@dimen/texto_chico"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtGpsDetalle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:fontFamily="monospace"
+                        android:text="@string/gps_consejo"
+                        android:textColor="@color/texto"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/btnActualizarGps"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/actualizar_ubicacion"
+                    app:srcCompat="@drawable/ic_actualizar"
+                    app:tint="@color/primario" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtEtiquetaTitulo"
+                style="@style/Etiquetas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:labelFor="@+id/edtTitulo"
+                android:text="@string/titulo" />
+
+            <EditText
+                android:id="@+id/edtTitulo"
+                style="@style/Campos"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/alto_campo"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/fondo_campo"
+                android:hint="@string/hint_titulo"
+                android:importantForAutofill="no"
+                android:inputType="textCapSentences"
+                android:maxLength="60"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp" />
+
+            <TextView
+                android:id="@+id/txtEtiquetaCategoria"
+                style="@style/Etiquetas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/categoria" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cgpCategoria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:checkedChip="@+id/chpFormPaisaje"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chpFormComida"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/comida" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chpFormPaisaje"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/paisaje" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chpFormEscuela"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/escuela" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chpFormOtro"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/otro" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <TextView
+                android:id="@+id/txtEtiquetaNota"
+                style="@style/Etiquetas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:labelFor="@+id/edtNota"
+                android:text="@string/nota" />
+
+            <EditText
+                android:id="@+id/edtNota"
+                style="@style/Campos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/fondo_campo"
+                android:gravity="top|start"
+                android:hint="@string/hint_nota"
+                android:importantForAutofill="no"
+                android:inputType="textCapSentences|textMultiLine"
+                android:minLines="4"
+                android:padding="14dp" />
+
+            <TextView
+                android:id="@+id/txtError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margen"
+                android:background="@drawable/fondo_redondeado"
+                android:backgroundTint="@color/error_fondo"
+                android:padding="@dimen/espacio"
+                android:textColor="@color/peligro"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btnGuardar"
+        style="@style/Botones"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/alto_boton"
+        android:layout_margin="@dimen/margen"
+        android:text="@string/guardar_parada"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

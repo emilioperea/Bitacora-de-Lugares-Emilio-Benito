@@ -8,6 +8,18 @@
     android:background="@color/fondo"
     tools:context=".MainActivity">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/tlbPrincipal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/primario"
+        android:minHeight="?attr/actionBarSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="@string/app_name"
+        app:titleTextColor="@color/white" />
+
     <EditText
         android:id="@+id/edtBuscar"
         android:layout_width="0dp"
@@ -31,7 +43,7 @@
         android:textSize="@dimen/texto_normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/tlbPrincipal" />
 
     <HorizontalScrollView
         android:id="@+id/hsvCategorias"

@@ -26,6 +26,12 @@
     <string name="guardar_parada">Guardar parada</string>
     <string name="cancelar">Cancelar</string>
 
+    <string name="guardar_cambios">Guardar cambios</string>
+    <string name="gps_consejo">Al aire libre tarda menos</string>
+    <string name="ubicacion_precision">Ubicación detectada · ±%1$d m</string>
+    <string name="gps_apagado_titulo">GPS apagado</string>
+    <string name="sin_permiso">Sin permiso de ubicación</string>
+
     <string name="detalle">Detalle</string>
     <string name="ubicacion_gps">Ubicación GPS</string>
     <string name="ver_mapa">Ver en el mapa</string>

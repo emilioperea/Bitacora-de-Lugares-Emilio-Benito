@@ -26,4 +26,5 @@
 
     <color name="borde_campo">#A9B1AD</color>
     <color name="error_fondo">#FDECEA</color>
+    <color name="error_borde">#F2C4BF</color>
 </resources>

@@ -85,7 +85,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Parada parada = paradas.get(position);
-                Toast.makeText(MainActivity.this, parada.getTitulo(), Toast.LENGTH_LONG).show();
+                Intent intent = new Intent();
+                intent.setClassName("com.aditusstudios.bitacoralugares",
+                        "com.aditusstudios.bitacoralugares.DetalleActivity");
+                intent.putExtra("id", parada.getId());
+                startActivity(intent);
             }
         });
     }

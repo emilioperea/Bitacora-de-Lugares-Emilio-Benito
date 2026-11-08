@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/superficie"
+    tools:context=".DetalleActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/tlbDetalle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/primario"
+        android:minHeight="?attr/actionBarSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationContentDescription="@string/cancelar"
+        app:navigationIcon="@drawable/ic_regresar"
+        app:navigationIconTint="@color/white"
+        app:title="@string/detalle"
+        app:titleTextColor="@color/white" />
+
+    <ScrollView
+        android:id="@+id/scvDetalle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tlbDetalle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imgFotoDetalle"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/foto_detalle"
+                android:contentDescription="@string/foto_parada"
+                android:scaleType="centerCrop" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/txtCategoriaDetalle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/fondo_redondeado"
+                    android:paddingStart="10dp"
+                    android:paddingTop="3dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="3dp"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    tools:text="Paisaje" />
+
+                <TextView
+                    android:id="@+id/txtTituloDetalle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margen_chico"
+                    android:textColor="@color/texto"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    tools:text="Atardecer en Cholula" />
+
+                <TextView
+                    android:id="@+id/txtFechaDetalle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/texto_secundario"
+                    android:textSize="14sp"
+                    tools:text="26 octubre 2026, 18:10" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:background="@drawable/fondo_gps"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="14dp">
+
+                    <ImageView
+                        android:id="@+id/imgGpsDetalle"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        app:srcCompat="@drawable/ic_logo"
+                        app:tint="@color/primario" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/espacio"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtEtiquetaGps"
+                            style="@style/Etiquetas"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ubicacion_gps" />
+
+                        <TextView
+                            android:id="@+id/txtCoordenadasDetalle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="monospace"
+                            android:textColor="@color/texto"
+                            android:textIsSelectable="true"
+                            android:textSize="15sp"
+                            tools:text="19.05741, -98.30219" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txtEtiquetaNotaDetalle"
+                    style="@style/Etiquetas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:text="@string/nota" />
+
+                <TextView
+                    android:id="@+id/txtNotaDetalle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:lineSpacingExtra="4dp"
+                    android:textColor="@color/texto"
+                    android:textSize="@dimen/texto_normal"
+                    tools:text="Subir a la pirámide como a las 6 pm." />
+
+                <Button
+                    android:id="@+id/btnVerMapa"
+                    style="@style/Botones"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/alto_boton"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/ver_mapa"
+                    app:icon="@drawable/ic_mapa"
+                    app:iconGravity="textStart"
+                    app:iconTint="@color/white" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/espacio"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnEditar"
+                        style="@style/BotonesSecundarios"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/alto_boton"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:text="@string/editar" />
+
+                    <Button
+                        android:id="@+id/btnBorrar"
+                        style="@style/BotonesSecundarios"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/alto_boton"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:text="@string/borrar"
+                        android:textColor="@color/peligro"
+                        app:strokeColor="@color/error_borde" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

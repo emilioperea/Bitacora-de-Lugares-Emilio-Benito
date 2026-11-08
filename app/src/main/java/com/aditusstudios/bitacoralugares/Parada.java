@@ -86,6 +86,11 @@ public class Parada {
         return formato.format(new Date(fecha));
     }
 
+    public String getFechaCompleta() {
+        SimpleDateFormat formato = new SimpleDateFormat("d MMMM yyyy, HH:mm", Locale.getDefault());
+        return formato.format(new Date(fecha));
+    }
+
     public String getCoordenadas() {
         return String.format(Locale.US, "%.5f, %.5f", latitud, longitud);
     }

@@ -31,6 +31,15 @@
             android:name=".FormularioActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.aditusstudios.bitacoralugares.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/rutas_archivos" />
+        </provider>
     </application>
 
 </manifest>

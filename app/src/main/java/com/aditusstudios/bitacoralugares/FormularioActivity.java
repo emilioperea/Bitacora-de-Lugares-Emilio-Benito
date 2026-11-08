@@ -2,17 +2,22 @@ package com.aditusstudios.bitacoralugares;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +30,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
@@ -33,20 +39,24 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.chip.ChipGroup;
 
+import java.io.File;
 import java.util.Locale;
 import java.util.Map;
 
 public class FormularioActivity extends AppCompatActivity {
     private static final float PRECISION_BUENA = 15;
+    private static final int LADO_MAXIMO_FOTO = 1600;
+    private static final String AUTORIDAD = "com.aditusstudios.bitacoralugares.fileprovider";
 
     private MaterialToolbar tlbFormulario;
+    private LinearLayout llyTomarFoto;
+    private ImageView imgFoto, imgGps;
+    private Button btnOtraFoto, btnGuardar;
     private ProgressBar pgbGps;
-    private ImageView imgGps;
     private TextView txtGpsTitulo, txtGpsDetalle, txtError;
     private ImageButton btnActualizarGps;
     private EditText edtTitulo, edtNota;
     private ChipGroup cgpCategoria;
-    private Button btnGuardar;
 
     private DatabaseHelper dbHelper;
     private Parada parada;
@@ -55,6 +65,11 @@ public class FormularioActivity extends AppCompatActivity {
     private double latitud, longitud;
     private boolean ubicacionLista = false;
     private boolean gpsBuscando = false;
+
+    private String rutaFoto;
+    private String rutaFotoOriginal;
+    private String fotoPendiente;
+    private boolean guardado = false;
 
     private ActivityResultLauncher<String[]> pidePermisoUbicacion = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
@@ -70,6 +85,15 @@ public class FormularioActivity extends AppCompatActivity {
                 }
             });
 
+    private ActivityResultLauncher<Uri> tomaFotoLauncher = registerForActivityResult(
+            new ActivityResultContracts.TakePicture(),
+            new ActivityResultCallback<Boolean>() {
+                @Override
+                public void onActivityResult(Boolean exito) {
+                    recibeFoto(Boolean.TRUE.equals(exito));
+                }
+            });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +101,9 @@ public class FormularioActivity extends AppCompatActivity {
         setContentView(R.layout.activity_formulario);
 
         tlbFormulario = findViewById(R.id.tlbFormulario);
+        llyTomarFoto = findViewById(R.id.llyTomarFoto);
+        imgFoto = findViewById(R.id.imgFoto);
+        btnOtraFoto = findViewById(R.id.btnOtraFoto);
         pgbGps = findViewById(R.id.pgbGps);
         imgGps = findViewById(R.id.imgGps);
         txtGpsTitulo = findViewById(R.id.txtGpsTitulo);
@@ -87,6 +114,8 @@ public class FormularioActivity extends AppCompatActivity {
         edtNota = findViewById(R.id.edtNota);
         cgpCategoria = findViewById(R.id.cgpCategoria);
         btnGuardar = findViewById(R.id.btnGuardar);
+
+        imgFoto.setClipToOutline(true);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), new OnApplyWindowInsetsListener() {
             @NonNull
@@ -104,6 +133,20 @@ public class FormularioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        llyTomarFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tomaFoto();
+            }
+        });
+
+        btnOtraFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tomaFoto();
             }
         });
 
@@ -150,7 +193,9 @@ public class FormularioActivity extends AppCompatActivity {
         };
 
         long idParada = getIntent().getLongExtra("id", -1);
-        if (idParada != -1) {
+        if (savedInstanceState != null) {
+            restauraEstado(savedInstanceState, idParada);
+        } else if (idParada != -1) {
             cargaParada(idParada);
         } else {
             iniciaGps();
@@ -169,10 +214,88 @@ public class FormularioActivity extends AppCompatActivity {
         edtNota.setText(parada.getNota());
         seleccionaCategoria(parada.getCategoria());
 
+        rutaFotoOriginal = parada.getFoto();
+        rutaFoto = rutaFotoOriginal;
+        if (parada.tieneFoto())
+            muestraFoto();
+
         latitud = parada.getLatitud();
         longitud = parada.getLongitud();
         ubicacionLista = true;
         muestraUbicacion(-1);
+    }
+
+    private void restauraEstado(Bundle estado, long idParada) {
+        if (idParada != -1) {
+            parada = dbHelper.obtenParada(idParada);
+            tlbFormulario.setTitle(R.string.editar_parada);
+            btnGuardar.setText(R.string.guardar_cambios);
+        }
+        rutaFoto = estado.getString("rutaFoto");
+        rutaFotoOriginal = estado.getString("rutaFotoOriginal");
+        fotoPendiente = estado.getString("fotoPendiente");
+        latitud = estado.getDouble("latitud");
+        longitud = estado.getDouble("longitud");
+        ubicacionLista = estado.getBoolean("ubicacionLista");
+
+        if (rutaFoto != null && !rutaFoto.isEmpty())
+            muestraFoto();
+        if (ubicacionLista)
+            muestraUbicacion(-1);
+        else
+            iniciaGps();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("rutaFoto", rutaFoto);
+        outState.putString("rutaFotoOriginal", rutaFotoOriginal);
+        outState.putString("fotoPendiente", fotoPendiente);
+        outState.putDouble("latitud", latitud);
+        outState.putDouble("longitud", longitud);
+        outState.putBoolean("ubicacionLista", ubicacionLista);
+    }
+
+    private void tomaFoto() {
+        File carpeta = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File archivo = new File(carpeta, "parada_" + System.currentTimeMillis() + ".jpg");
+        fotoPendiente = archivo.getAbsolutePath();
+        Uri uri = FileProvider.getUriForFile(this, AUTORIDAD, archivo);
+
+        try {
+            tomaFotoLauncher.launch(uri);
+        } catch (ActivityNotFoundException e) {
+            fotoPendiente = null;
+            Toast.makeText(this, R.string.sin_camara, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void recibeFoto(boolean exito) {
+        if (exito && fotoPendiente != null && UtilFotos.reduceFoto(fotoPendiente, LADO_MAXIMO_FOTO)) {
+            if (rutaFoto != null && !rutaFoto.equals(rutaFotoOriginal))
+                UtilFotos.borraFoto(rutaFoto);
+            rutaFoto = fotoPendiente;
+            muestraFoto();
+            txtError.setVisibility(View.GONE);
+        } else {
+            UtilFotos.borraFoto(fotoPendiente);
+        }
+        fotoPendiente = null;
+    }
+
+    private void muestraFoto() {
+        Bitmap bitmap = UtilFotos.cargaFoto(rutaFoto, 1080);
+        if (bitmap != null) {
+            imgFoto.setImageBitmap(bitmap);
+            imgFoto.setVisibility(View.VISIBLE);
+            btnOtraFoto.setVisibility(View.VISIBLE);
+            llyTomarFoto.setVisibility(View.GONE);
+        } else {
+            imgFoto.setVisibility(View.GONE);
+            btnOtraFoto.setVisibility(View.GONE);
+            llyTomarFoto.setVisibility(View.VISIBLE);
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -283,6 +406,10 @@ public class FormularioActivity extends AppCompatActivity {
             muestraError(R.string.error_titulo);
             return;
         }
+        if (rutaFoto == null || rutaFoto.isEmpty()) {
+            muestraError(R.string.error_foto);
+            return;
+        }
         if (!ubicacionLista) {
             muestraError(R.string.error_gps);
             return;
@@ -290,16 +417,21 @@ public class FormularioActivity extends AppCompatActivity {
 
         detenGps();
         if (parada == null) {
-            Parada nueva = new Parada(titulo, categoria, nota, "", latitud, longitud,
+            Parada nueva = new Parada(titulo, categoria, nota, rutaFoto, latitud, longitud,
                     System.currentTimeMillis());
             dbHelper.insertaParada(nueva);
             Toast.makeText(this, R.string.parada_guardada, Toast.LENGTH_LONG).show();
         } else {
+            if (!rutaFoto.equals(rutaFotoOriginal)) {
+                UtilFotos.borraFoto(rutaFotoOriginal);
+                parada.setFoto(rutaFoto);
+            }
             parada.editar(titulo, categoria, nota);
             parada.setUbicacion(latitud, longitud);
             dbHelper.actualizaParada(parada);
             Toast.makeText(this, R.string.cambios_guardados, Toast.LENGTH_LONG).show();
         }
+        guardado = true;
         finish();
     }
 
@@ -318,6 +450,11 @@ public class FormularioActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (isFinishing() && !guardado) {
+            if (rutaFoto != null && !rutaFoto.equals(rutaFotoOriginal))
+                UtilFotos.borraFoto(rutaFoto);
+            UtilFotos.borraFoto(fotoPendiente);
+        }
         dbHelper.close();
         super.onDestroy();
     }

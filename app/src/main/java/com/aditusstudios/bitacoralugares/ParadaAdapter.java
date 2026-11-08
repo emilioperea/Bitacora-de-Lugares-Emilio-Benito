@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -46,9 +47,16 @@ public class ParadaAdapter extends ArrayAdapter<Parada> {
 
         imgMiniatura.setClipToOutline(true);
         imgMiniatura.setBackgroundTintList(ColorStateList.valueOf(colorFondo));
-        imgMiniatura.setScaleType(ImageView.ScaleType.CENTER);
-        imgMiniatura.setImageResource(R.drawable.ic_foto);
-        imgMiniatura.setImageTintList(ColorStateList.valueOf(colorTexto));
+        Bitmap miniatura = UtilFotos.cargaFoto(parada.getFoto(), 200);
+        if (miniatura != null) {
+            imgMiniatura.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imgMiniatura.setImageTintList(null);
+            imgMiniatura.setImageBitmap(miniatura);
+        } else {
+            imgMiniatura.setScaleType(ImageView.ScaleType.CENTER);
+            imgMiniatura.setImageResource(R.drawable.ic_foto);
+            imgMiniatura.setImageTintList(ColorStateList.valueOf(colorTexto));
+        }
 
         return convertView;
     }

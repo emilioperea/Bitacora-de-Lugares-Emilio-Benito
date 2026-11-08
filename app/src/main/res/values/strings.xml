@@ -7,7 +7,7 @@
     <string name="hint_buscar">Buscar por título, nota o lugar</string>
     <string name="todas">Todas</string>
     <string name="nueva_parada">Nueva parada</string>
-    <string name="lista_vacia">Todavía no tienes paradas. Toca «Nueva parada» para guardar la primera.</string>
+    <string name="lista_vacia">Todavía no tienes paradas. Toca "Nueva parada" para guardar la primera.</string>
     <string name="sin_resultados">Ninguna parada coincide con tu búsqueda o filtro.</string>
 
     <string name="editar_parada">Editar parada</string>

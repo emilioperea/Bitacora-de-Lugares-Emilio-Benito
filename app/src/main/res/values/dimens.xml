@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margen">16dp</dimen>
+    <dimen name="margen_chico">8dp</dimen>
+    <dimen name="espacio">12dp</dimen>
+    <dimen name="alto_boton">52dp</dimen>
+    <dimen name="alto_campo">48dp</dimen>
+    <dimen name="miniatura">72dp</dimen>
+    <dimen name="foto_detalle">240dp</dimen>
+    <dimen name="foto_formulario">200dp</dimen>
+    <dimen name="logo_splash">120dp</dimen>
+    <dimen name="texto_grande">28sp</dimen>
+    <dimen name="texto_titulo">22sp</dimen>
+    <dimen name="texto_normal">16sp</dimen>
+    <dimen name="texto_chico">13sp</dimen>
+</resources>

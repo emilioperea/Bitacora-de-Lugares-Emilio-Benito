@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primario">#0F766E</color>
+    <color name="primario_oscuro">#0B5A54</color>
+    <color name="fondo">#F5F6F4</color>
+    <color name="superficie">#FFFFFF</color>
+    <color name="texto">#1C1F1E</color>
+    <color name="texto_secundario">#5B615E</color>
+    <color name="borde">#E4E6E3</color>
+    <color name="peligro">#B42318</color>
+    <color name="fondo_gps">#EAF4F1</color>
+
+    <color name="comida_fondo">#FDE7D7</color>
+    <color name="comida_texto">#9A3412</color>
+    <color name="paisaje_fondo">#D7EFE8</color>
+    <color name="paisaje_texto">#0F5F58</color>
+    <color name="escuela_fondo">#DEE6F8</color>
+    <color name="escuela_texto">#1E40AF</color>
+    <color name="otro_fondo">#ECEAE5</color>
+    <color name="otro_texto">#4A4540</color>
+
+    <color name="fondo_logo">#FFF4E3</color>
+    <color name="rojo_logo">#EA503D</color>
+</resources>

@@ -1,3 +1,64 @@
 <resources>
-    <string name="app_name">BitacoraLugares</string>
+    <string name="app_name">Bitácora de Lugares</string>
+
+    <string name="splash_subtitulo">Tus paradas con foto y ubicación</string>
+    <string name="logo_empresa">Logo de Aditus Studios</string>
+
+    <string name="hint_buscar">Buscar por título, nota o lugar</string>
+    <string name="todas">Todas</string>
+    <string name="nueva_parada">Nueva parada</string>
+    <string name="lista_vacia">Todavía no tienes paradas. Toca «Nueva parada» para guardar la primera.</string>
+    <string name="sin_resultados">Ninguna parada coincide con tu búsqueda o filtro.</string>
+
+    <string name="editar_parada">Editar parada</string>
+    <string name="tomar_foto">Tomar foto</string>
+    <string name="tomar_otra">Tomar otra</string>
+    <string name="abre_camara">Abre la cámara del teléfono</string>
+    <string name="buscando_gps">Buscando señal GPS…</string>
+    <string name="ubicacion_detectada">Ubicación detectada</string>
+    <string name="actualizar_ubicacion">Actualizar ubicación</string>
+    <string name="titulo">Título *</string>
+    <string name="hint_titulo">Ej. Café junto al parque</string>
+    <string name="categoria">Categoría</string>
+    <string name="nota">Nota</string>
+    <string name="hint_nota">¿Qué hay que recordar de este lugar?</string>
+    <string name="guardar">Guardar</string>
+    <string name="guardar_parada">Guardar parada</string>
+    <string name="cancelar">Cancelar</string>
+
+    <string name="detalle">Detalle</string>
+    <string name="ubicacion_gps">Ubicación GPS</string>
+    <string name="ver_mapa">Ver en el mapa</string>
+    <string name="editar">Editar</string>
+    <string name="borrar">Borrar</string>
+    <string name="ver_detalle">Ver detalle</string>
+    <string name="sin_nota">Sin nota.</string>
+    <string name="foto_parada">Foto de la parada</string>
+
+    <string name="borrar_titulo">¿Borrar esta parada?</string>
+    <string name="borrar_mensaje">Se eliminará de la bitácora junto con su foto. No se puede deshacer.</string>
+
+    <string name="error_titulo">Escribe un título para la parada.</string>
+    <string name="error_foto">Toma una foto antes de guardar.</string>
+    <string name="error_gps">Espera a que el GPS detecte tu ubicación.</string>
+    <string name="parada_guardada">Parada guardada</string>
+    <string name="cambios_guardados">Cambios guardados</string>
+    <string name="parada_borrada">Parada borrada</string>
+    <string name="permiso_ubicacion">Se necesita el permiso de ubicación para guardar dónde estás.</string>
+    <string name="gps_apagado">Activa el GPS del teléfono para detectar tu ubicación.</string>
+    <string name="sin_camara">No hay una app de cámara disponible.</string>
+    <string name="sin_mapas">No hay una app de mapas instalada.</string>
+
+    <string name="menu_recientes">Más recientes primero</string>
+    <string name="menu_nombre">Ordenar por nombre</string>
+    <string name="menu_acerca">Acerca de</string>
+    <string name="acerca_mensaje">Guarda paradas de tus recorridos con una foto, la ubicación del GPS y una nota.\n\nProyecto final de Programación de Dispositivos Móviles.\n\nEmilio Perea Montes\nBenito Abi Ramírez Vázquez</string>
+    <string name="cerrar">Cerrar</string>
+
+    <string-array name="categorias">
+        <item>Comida</item>
+        <item>Paisaje</item>
+        <item>Escuela</item>
+        <item>Otro</item>
+    </string-array>
 </resources>

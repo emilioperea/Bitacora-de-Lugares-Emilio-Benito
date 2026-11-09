@@ -1,7 +1,6 @@
 package com.aditusstudios.bitacoralugares;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -69,7 +68,6 @@ public class FormularioActivity extends AppCompatActivity {
     private String rutaFoto;
     private String rutaFotoOriginal;
     private String fotoPendiente;
-    private boolean guardado = false;
 
     private ActivityResultLauncher<String[]> pidePermisoUbicacion = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
@@ -132,6 +130,8 @@ public class FormularioActivity extends AppCompatActivity {
         tlbFormulario.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (rutaFoto != null && !rutaFoto.equals(rutaFotoOriginal))
+                    UtilFotos.borraFoto(rutaFoto);
                 finish();
             }
         });
@@ -298,7 +298,6 @@ public class FormularioActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("MissingPermission")
     private void iniciaGps() {
         boolean permisoPreciso = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
@@ -348,7 +347,8 @@ public class FormularioActivity extends AppCompatActivity {
         pgbGps.setVisibility(View.GONE);
         imgGps.setVisibility(View.VISIBLE);
         if (metros >= 0)
-            txtGpsTitulo.setText(getString(R.string.ubicacion_precision, metros));
+            txtGpsTitulo.setText(getString(R.string.ubicacion_detectada) + " ("
+                    + getString(R.string.precision) + " " + metros + " m)");
         else
             txtGpsTitulo.setText(R.string.ubicacion_detectada);
         txtGpsDetalle.setText(formatoCoordenadas());
@@ -431,7 +431,6 @@ public class FormularioActivity extends AppCompatActivity {
             dbHelper.actualizaParada(parada);
             Toast.makeText(this, R.string.cambios_guardados, Toast.LENGTH_LONG).show();
         }
-        guardado = true;
         finish();
     }
 
@@ -450,11 +449,6 @@ public class FormularioActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (isFinishing() && !guardado) {
-            if (rutaFoto != null && !rutaFoto.equals(rutaFotoOriginal))
-                UtilFotos.borraFoto(rutaFoto);
-            UtilFotos.borraFoto(fotoPendiente);
-        }
         dbHelper.close();
         super.onDestroy();
     }

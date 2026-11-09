@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/mnuVerDetalle"
+        android:title="@string/ver_detalle" />
+    <item
+        android:id="@+id/mnuEditar"
+        android:title="@string/editar" />
+    <item
+        android:id="@+id/mnuBorrar"
+        android:title="@string/borrar" />
+</menu>

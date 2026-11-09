@@ -4,7 +4,7 @@
     <string name="splash_subtitulo">Tus paradas con foto y ubicación</string>
     <string name="logo_empresa">Logo de Aditus Studios</string>
 
-    <string name="hint_buscar">Buscar por título, nota o lugar</string>
+    <string name="hint_buscar">Buscar por título o nota</string>
     <string name="todas">Todas</string>
     <string name="nueva_parada">Nueva parada</string>
     <string name="lista_vacia">Todavía no tienes paradas. Toca "Nueva parada" para guardar la primera.</string>
@@ -28,7 +28,7 @@
 
     <string name="guardar_cambios">Guardar cambios</string>
     <string name="gps_consejo">Al aire libre tarda menos</string>
-    <string name="ubicacion_precision">Ubicación detectada · ±%1$d m</string>
+    <string name="precision">precisión de</string>
     <string name="gps_apagado_titulo">GPS apagado</string>
     <string name="sin_permiso">Sin permiso de ubicación</string>
 
@@ -62,7 +62,7 @@
     <string name="cerrar">Cerrar</string>
 
     <string name="contador_una">1 parada</string>
-    <string name="contador_varias">%1$d paradas</string>
+    <string name="paradas">paradas</string>
 
     <string name="comida">Comida</string>
     <string name="paisaje">Paisaje</string>

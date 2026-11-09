@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/grpOrden"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/mnuRecientes"
+            android:checked="true"
+            android:title="@string/menu_recientes" />
+        <item
+            android:id="@+id/mnuNombre"
+            android:title="@string/menu_nombre" />
+    </group>
+
+    <item
+        android:id="@+id/mnuAcerca"
+        android:title="@string/menu_acerca" />
+</menu>

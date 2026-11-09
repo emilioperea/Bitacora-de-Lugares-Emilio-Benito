@@ -86,7 +86,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="18dp"
-                    android:background="@drawable/fondo_gps"
+                    android:background="@drawable/fondo_redondeado"
+                    android:backgroundTint="@color/fondo_gps"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:padding="14dp">
@@ -120,7 +121,6 @@
                             android:layout_marginTop="2dp"
                             android:fontFamily="monospace"
                             android:textColor="@color/texto"
-                            android:textIsSelectable="true"
                             android:textSize="15sp"
                             tools:text="19.05741, -98.30219" />
                     </LinearLayout>

@@ -38,7 +38,7 @@ public class ParadaAdapter extends ArrayAdapter<Parada> {
 
         txtTituloParada.setText(parada.getTitulo());
         txtFechaParada.setText(parada.getFechaTexto());
-        txtCategoriaParada.setText(parada.getCategoria());
+        txtCategoriaParada.setText(parada.getCategoriaTexto());
 
         int colorFondo = ContextCompat.getColor(getContext(), parada.getColorFondo());
         int colorTexto = ContextCompat.getColor(getContext(), parada.getColorTexto());

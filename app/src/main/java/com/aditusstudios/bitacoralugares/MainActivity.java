@@ -166,13 +166,13 @@ public class MainActivity extends AppCompatActivity {
     private String obtenCategoriaFiltro() {
         int idChip = cgpCategorias.getCheckedChipId();
         if (idChip == R.id.chpComida)
-            return getString(R.string.comida);
+            return Parada.COMIDA;
         else if (idChip == R.id.chpPaisaje)
-            return getString(R.string.paisaje);
+            return Parada.PAISAJE;
         else if (idChip == R.id.chpEscuela)
-            return getString(R.string.escuela);
+            return Parada.ESCUELA;
         else if (idChip == R.id.chpOtro)
-            return getString(R.string.otro);
+            return Parada.OTRO;
         else
             return null;
     }

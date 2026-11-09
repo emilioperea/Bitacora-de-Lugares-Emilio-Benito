@@ -372,21 +372,21 @@ public class FormularioActivity extends AppCompatActivity {
     private String obtenCategoria() {
         int idChip = cgpCategoria.getCheckedChipId();
         if (idChip == R.id.chpFormComida)
-            return getString(R.string.comida);
+            return Parada.COMIDA;
         else if (idChip == R.id.chpFormEscuela)
-            return getString(R.string.escuela);
+            return Parada.ESCUELA;
         else if (idChip == R.id.chpFormOtro)
-            return getString(R.string.otro);
+            return Parada.OTRO;
         else
-            return getString(R.string.paisaje);
+            return Parada.PAISAJE;
     }
 
     private void seleccionaCategoria(String categoria) {
-        if (categoria.equals(getString(R.string.comida)))
+        if (categoria.equals(Parada.COMIDA))
             cgpCategoria.check(R.id.chpFormComida);
-        else if (categoria.equals(getString(R.string.escuela)))
+        else if (categoria.equals(Parada.ESCUELA))
             cgpCategoria.check(R.id.chpFormEscuela);
-        else if (categoria.equals(getString(R.string.otro)))
+        else if (categoria.equals(Parada.OTRO))
             cgpCategoria.check(R.id.chpFormOtro);
         else
             cgpCategoria.check(R.id.chpFormPaisaje);

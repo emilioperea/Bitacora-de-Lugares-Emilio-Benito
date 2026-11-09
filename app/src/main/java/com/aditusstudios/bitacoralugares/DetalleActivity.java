@@ -114,7 +114,7 @@ public class DetalleActivity extends AppCompatActivity {
         int colorFondo = ContextCompat.getColor(this, parada.getColorFondo());
         int colorTexto = ContextCompat.getColor(this, parada.getColorTexto());
 
-        txtCategoriaDetalle.setText(parada.getCategoria());
+        txtCategoriaDetalle.setText(parada.getCategoriaTexto());
         txtCategoriaDetalle.setBackgroundTintList(ColorStateList.valueOf(colorFondo));
         txtCategoriaDetalle.setTextColor(colorTexto);
         txtTituloDetalle.setText(parada.getTitulo());

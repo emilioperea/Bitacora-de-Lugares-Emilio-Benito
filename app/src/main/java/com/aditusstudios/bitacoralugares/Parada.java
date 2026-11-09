@@ -13,6 +13,10 @@ public class Parada {
     private double latitud;
     private double longitud;
     private long fecha;
+    public static final String COMIDA = "Comida";
+    public static final String PAISAJE = "Paisaje";
+    public static final String ESCUELA = "Escuela";
+    public static final String OTRO = "Otro";
 
     public Parada(String titulo, String categoria, String nota, String foto,
                   double latitud, double longitud, long fecha) {
@@ -95,23 +99,34 @@ public class Parada {
         return String.format(Locale.US, "%.5f, %.5f", latitud, longitud);
     }
 
+    public int getCategoriaTexto() {
+        if (categoria.equals(COMIDA))
+            return R.string.comida;
+        else if (categoria.equals(PAISAJE))
+            return R.string.paisaje;
+        else if (categoria.equals(ESCUELA))
+            return R.string.escuela;
+        else
+            return R.string.otro;
+    }
+
     public int getColorFondo() {
-        if (categoria.equals("Comida"))
+        if (categoria.equals(COMIDA))
             return R.color.comida_fondo;
-        else if (categoria.equals("Paisaje"))
+        else if (categoria.equals(PAISAJE))
             return R.color.paisaje_fondo;
-        else if (categoria.equals("Escuela"))
+        else if (categoria.equals(ESCUELA))
             return R.color.escuela_fondo;
         else
             return R.color.otro_fondo;
     }
 
     public int getColorTexto() {
-        if (categoria.equals("Comida"))
+        if (categoria.equals(COMIDA))
             return R.color.comida_texto;
-        else if (categoria.equals("Paisaje"))
+        else if (categoria.equals(PAISAJE))
             return R.color.paisaje_texto;
-        else if (categoria.equals("Escuela"))
+        else if (categoria.equals(ESCUELA))
             return R.color.escuela_texto;
         else
             return R.color.otro_texto;

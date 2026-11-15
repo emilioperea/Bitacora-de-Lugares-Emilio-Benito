@@ -60,7 +60,7 @@ Bitácora de Lugares junta en un solo registro **qué es** el lugar (título, ca
 2. **Esperar la sincronización de Gradle** (la barra de progreso de abajo). La primera vez descarga las dependencias y puede tardar unos minutos.
 3. **Compilar:** **Build → Make Project**. Debe terminar sin errores.
 4. **Conectar el teléfono** por USB y aceptar en el teléfono el aviso para permitir la depuración USB. El teléfono aparece arriba, en la lista de dispositivos.
-5. **Ejecutar:** presionar **Run ▶**. La app se instala y se abre en el teléfono.
+5. **Ejecutar:** presionar **Run**. La app se instala y se abre en el teléfono.
 6. **Primer uso:** al crear la primera parada, aceptar el permiso de ubicación (de preferencia "Precisa" y "Mientras la app esté en uso"). Conviene probar cerca de una ventana o al aire libre para que el GPS encuentre la señal más rápido.
 
 La app incluye tres paradas de ejemplo (sin foto) para que la lista no empiece vacía.

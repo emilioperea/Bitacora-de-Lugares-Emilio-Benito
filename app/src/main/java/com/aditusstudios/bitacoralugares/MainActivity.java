@@ -11,6 +11,7 @@ package com.aditusstudios.bitacoralugares;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -22,7 +23,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +34,6 @@ import androidx.activity.SystemBarStyle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
@@ -41,7 +43,6 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -53,9 +54,11 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout llyVacio;
     private ExtendedFloatingActionButton fabNuevaParada;
 
-    private DatabaseHelper dbHelper;
-    private ArrayList<Parada> paradas;
-    private ParadaAdapter adapter;
+    private DatabaseHelper db = null;
+    private Cursor paradasCursor = null;
+    private String[] from = { DatabaseHelper.TITULO, DatabaseHelper.NOTA };
+    private int[] to = { R.id.txtTituloParada, R.id.txtNotaParada };
+    private ListAdapter adapter;
     private SharedPreferences misPreferencias;
     private boolean porNombre;
 
@@ -87,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        dbHelper = new DatabaseHelper(this);
+        db = new DatabaseHelper(this);
 
         misPreferencias = getSharedPreferences("Preferencias", MODE_PRIVATE);
         porNombre = misPreferencias.getBoolean("ordenPorNombre", false);
@@ -97,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         lvwParadas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                abreDetalle(paradas.get(position));
+                abreDetalle(id);
             }
         });
 
@@ -143,13 +146,34 @@ public class MainActivity extends AppCompatActivity {
     private void cargaParadas() {
         String busqueda = edtBuscar.getText().toString().trim();
         String categoria = obtenCategoriaFiltro();
+        String patron = "%" + busqueda + "%";
+        String[] argumentos;
 
-        paradas = dbHelper.obtenParadas(busqueda, categoria, porNombre);
-        adapter = new ParadaAdapter(this, paradas);
+        String consulta = "SELECT _id, titulo, nota FROM " + DatabaseHelper.TABLE_NAME +
+                " WHERE (titulo LIKE ? OR nota LIKE ?)";
+        if (categoria == null) {
+            argumentos = new String[]{patron, patron};
+        } else {
+            consulta = consulta + " AND categoria = ?";
+            argumentos = new String[]{patron, patron, categoria};
+        }
+        if (porNombre)
+            consulta = consulta + " ORDER BY titulo";
+        else
+            consulta = consulta + " ORDER BY fecha DESC";
+
+        paradasCursor = db.getReadableDatabase().rawQuery(consulta, argumentos);
+        adapter = new SimpleCursorAdapter(this, R.layout.row_parada, paradasCursor, from, to,
+                SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         lvwParadas.setAdapter(adapter);
-        actualizaContador();
 
-        if (paradas.size() == 0) {
+        int total = paradasCursor.getCount();
+        if (total == 1)
+            txtContador.setText(R.string.contador_una);
+        else
+            txtContador.setText(total + " " + getString(R.string.paradas));
+
+        if (total == 0) {
             lvwParadas.setVisibility(View.GONE);
             llyVacio.setVisibility(View.VISIBLE);
         } else {
@@ -177,27 +201,19 @@ public class MainActivity extends AppCompatActivity {
             return null;
     }
 
-    private void actualizaContador() {
-        if (paradas.size() == 1)
-            txtContador.setText(R.string.contador_una);
-        else
-            txtContador.setText(paradas.size() + " " + getString(R.string.paradas));
-    }
-
-
-    private void abreDetalle(Parada parada) {
+    private void abreDetalle(long id) {
         Intent intent = new Intent();
         intent.setClassName("com.aditusstudios.bitacoralugares",
                 "com.aditusstudios.bitacoralugares.DetalleActivity");
-        intent.putExtra("id", parada.getId());
+        intent.putExtra("id", id);
         startActivity(intent);
     }
 
-    private void abreFormulario(Parada parada) {
+    private void abreFormulario(long id) {
         Intent intent = new Intent();
         intent.setClassName("com.aditusstudios.bitacoralugares",
                 "com.aditusstudios.bitacoralugares.FormularioActivity");
-        intent.putExtra("id", parada.getId());
+        intent.putExtra("id", id);
         startActivity(intent);
     }
 
@@ -206,7 +222,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_principal, menu);
-        // Se marca el orden que estaba guardado
         if (porNombre)
             menu.findItem(R.id.mnuNombre).setChecked(true);
         else
@@ -240,11 +255,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void muestraAcerca() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.app_name);
-        builder.setMessage(R.string.acerca_mensaje);
-        builder.setPositiveButton(R.string.cerrar, null);
-        builder.show();
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.app_name)
+                .setMessage(R.string.acerca_mensaje)
+                .setPositiveButton(R.string.cerrar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // No hacemos nada...
+                    }
+                }).show();
     }
 
 
@@ -252,8 +271,9 @@ public class MainActivity extends AppCompatActivity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-        Parada parada = paradas.get(info.position);
-        menu.setHeaderTitle(parada.getTitulo());
+        Parada parada = db.obtenParada(info.id);
+        if (parada != null)
+            menu.setHeaderTitle(parada.getTitulo());
         getMenuInflater().inflate(R.menu.menu_contextual, menu);
     }
 
@@ -261,44 +281,53 @@ public class MainActivity extends AppCompatActivity {
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         super.onContextItemSelected(item);
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        Parada parada = paradas.get(info.position);
 
         if (item.getItemId() == R.id.mnuVerDetalle) {
-            abreDetalle(parada);
+            abreDetalle(info.id);
         }
         if (item.getItemId() == R.id.mnuEditar) {
-            abreFormulario(parada);
+            abreFormulario(info.id);
         }
         if (item.getItemId() == R.id.mnuBorrar) {
-            confirmaBorrado(parada);
+            borra(info.id);
         }
         return true;
     }
 
-    private void confirmaBorrado(final Parada parada) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.borrar_titulo);
-        builder.setMessage(R.string.borrar_mensaje);
-        builder.setPositiveButton(R.string.borrar, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                UtilFotos.borraFoto(parada.getFoto());
-                dbHelper.borraParada(parada.getId());
-                Toast.makeText(MainActivity.this, R.string.parada_borrada, Toast.LENGTH_LONG).show();
-                cargaParadas();
-            }
-        });
-        builder.setNegativeButton(R.string.cancelar, null);
+    private void borra(final long rowID) {
+        if (rowID > 0) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.borrar_titulo)
+                    .setMessage(R.string.borrar_mensaje)
+                    .setPositiveButton(R.string.borrar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            procesaBorrado(rowID);
+                        }
+                    })
+                    .setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // No hacemos nada...
+                        }
+                    }).show();
+        }
+    }
 
-        AlertDialog dialogo = builder.create();
-        dialogo.show();
-        dialogo.getButton(AlertDialog.BUTTON_POSITIVE)
-                .setTextColor(ContextCompat.getColor(this, R.color.peligro));
+    private void procesaBorrado(long rowID) {
+        Parada parada = db.obtenParada(rowID);
+        if (parada != null)
+            UtilFotos.borraFoto(parada.getFoto());
+        db.borraParada(rowID);
+        Toast.makeText(MainActivity.this, R.string.parada_borrada, Toast.LENGTH_LONG).show();
+        cargaParadas();
     }
 
     @Override
     protected void onDestroy() {
-        dbHelper.close();
+        if (paradasCursor != null)
+            paradasCursor.close();
+        db.close();
         super.onDestroy();
     }
 }

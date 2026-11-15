@@ -20,7 +20,6 @@
     <string name="categoria">Category</string>
     <string name="nota">Note</string>
     <string name="hint_nota">What should one remember about this place?</string>
-    <string name="guardar">Save</string>
     <string name="guardar_parada">Save stop</string>
     <string name="cancelar">Cancel</string>
     <string name="guardar_cambios">Save changes</string>
@@ -36,6 +35,7 @@
     <string name="ver_detalle">View details</string>
     <string name="sin_nota">No note.</string>
     <string name="foto_parada">Photo of the stop</string>
+    <string name="sin_foto">No photo</string>
     <string name="borrar_titulo">Delete this stop?</string>
     <string name="borrar_mensaje">It will be removed from the log, along with its photo. This cannot be undone.</string>
     <string name="error_titulo">Write a title for the stop.</string>

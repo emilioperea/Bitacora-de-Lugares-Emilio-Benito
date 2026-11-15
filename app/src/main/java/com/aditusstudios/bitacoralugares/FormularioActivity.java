@@ -2,15 +2,16 @@ package com.aditusstudios.bitacoralugares;
 
 import android.Manifest;
 import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,13 +24,13 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.SystemBarStyle;
+import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
@@ -38,14 +39,11 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.chip.ChipGroup;
 
-import java.io.File;
 import java.util.Locale;
 import java.util.Map;
 
 public class FormularioActivity extends AppCompatActivity {
     private static final float PRECISION_BUENA = 15;
-    private static final int LADO_MAXIMO_FOTO = 1600;
-    private static final String AUTORIDAD = "com.aditusstudios.bitacoralugares.fileprovider";
 
     private MaterialToolbar tlbFormulario;
     private LinearLayout llyTomarFoto;
@@ -57,7 +55,7 @@ public class FormularioActivity extends AppCompatActivity {
     private EditText edtTitulo, edtNota;
     private ChipGroup cgpCategoria;
 
-    private DatabaseHelper dbHelper;
+    private DatabaseHelper db = null;
     private Parada parada;
     private LocationManager locationManager;
     private LocationListener locationListener;
@@ -67,7 +65,6 @@ public class FormularioActivity extends AppCompatActivity {
 
     private String rutaFoto;
     private String rutaFotoOriginal;
-    private String fotoPendiente;
 
     private ActivityResultLauncher<String[]> pidePermisoUbicacion = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
@@ -83,12 +80,18 @@ public class FormularioActivity extends AppCompatActivity {
                 }
             });
 
-    private ActivityResultLauncher<Uri> tomaFotoLauncher = registerForActivityResult(
-            new ActivityResultContracts.TakePicture(),
-            new ActivityResultCallback<Boolean>() {
+    private ActivityResultLauncher<Intent> camaraLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
                 @Override
-                public void onActivityResult(Boolean exito) {
-                    recibeFoto(Boolean.TRUE.equals(exito));
+                public void onActivityResult(ActivityResult resultado) {
+                    if (resultado.getResultCode() == RESULT_OK && resultado.getData() != null) {
+                        Bundle extras = resultado.getData().getExtras();
+                        if (extras != null) {
+                            Bitmap foto = (Bitmap) extras.get("data");
+                            recibeFoto(foto);
+                        }
+                    }
                 }
             });
 
@@ -112,8 +115,6 @@ public class FormularioActivity extends AppCompatActivity {
         edtNota = findViewById(R.id.edtNota);
         cgpCategoria = findViewById(R.id.cgpCategoria);
         btnGuardar = findViewById(R.id.btnGuardar);
-
-        imgFoto.setClipToOutline(true);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), new OnApplyWindowInsetsListener() {
             @NonNull
@@ -164,7 +165,7 @@ public class FormularioActivity extends AppCompatActivity {
             }
         });
 
-        dbHelper = new DatabaseHelper(this);
+        db = new DatabaseHelper(this);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         locationListener = new LocationListener() {
@@ -203,7 +204,7 @@ public class FormularioActivity extends AppCompatActivity {
     }
 
     private void cargaParada(long idParada) {
-        parada = dbHelper.obtenParada(idParada);
+        parada = db.obtenParada(idParada);
         if (parada == null) {
             finish();
             return;
@@ -227,13 +228,12 @@ public class FormularioActivity extends AppCompatActivity {
 
     private void restauraEstado(Bundle estado, long idParada) {
         if (idParada != -1) {
-            parada = dbHelper.obtenParada(idParada);
+            parada = db.obtenParada(idParada);
             tlbFormulario.setTitle(R.string.editar_parada);
             btnGuardar.setText(R.string.guardar_cambios);
         }
         rutaFoto = estado.getString("rutaFoto");
         rutaFotoOriginal = estado.getString("rutaFotoOriginal");
-        fotoPendiente = estado.getString("fotoPendiente");
         latitud = estado.getDouble("latitud");
         longitud = estado.getDouble("longitud");
         ubicacionLista = estado.getBoolean("ubicacionLista");
@@ -251,41 +251,37 @@ public class FormularioActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putString("rutaFoto", rutaFoto);
         outState.putString("rutaFotoOriginal", rutaFotoOriginal);
-        outState.putString("fotoPendiente", fotoPendiente);
         outState.putDouble("latitud", latitud);
         outState.putDouble("longitud", longitud);
         outState.putBoolean("ubicacionLista", ubicacionLista);
     }
 
     private void tomaFoto() {
-        File carpeta = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File archivo = new File(carpeta, "parada_" + System.currentTimeMillis() + ".jpg");
-        fotoPendiente = archivo.getAbsolutePath();
-        Uri uri = FileProvider.getUriForFile(this, AUTORIDAD, archivo);
-
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
-            tomaFotoLauncher.launch(uri);
+            camaraLauncher.launch(intent);
         } catch (ActivityNotFoundException e) {
-            fotoPendiente = null;
             Toast.makeText(this, R.string.sin_camara, Toast.LENGTH_LONG).show();
         }
     }
 
-    private void recibeFoto(boolean exito) {
-        if (exito && fotoPendiente != null && UtilFotos.reduceFoto(fotoPendiente, LADO_MAXIMO_FOTO)) {
-            if (rutaFoto != null && !rutaFoto.equals(rutaFotoOriginal))
-                UtilFotos.borraFoto(rutaFoto);
-            rutaFoto = fotoPendiente;
-            muestraFoto();
-            txtError.setVisibility(View.GONE);
-        } else {
-            UtilFotos.borraFoto(fotoPendiente);
-        }
-        fotoPendiente = null;
+    private void recibeFoto(Bitmap foto) {
+        if (foto == null)
+            return;
+
+        String rutaNueva = UtilFotos.guardaFoto(this, foto);
+        if (rutaNueva == null)
+            return;
+
+        if (rutaFoto != null && !rutaFoto.equals(rutaFotoOriginal))
+            UtilFotos.borraFoto(rutaFoto);
+        rutaFoto = rutaNueva;
+        muestraFoto();
+        txtError.setVisibility(View.GONE);
     }
 
     private void muestraFoto() {
-        Bitmap bitmap = UtilFotos.cargaFoto(rutaFoto, 1080);
+        Bitmap bitmap = UtilFotos.cargaFoto(rutaFoto);
         if (bitmap != null) {
             imgFoto.setImageBitmap(bitmap);
             imgFoto.setVisibility(View.VISIBLE);
@@ -417,9 +413,15 @@ public class FormularioActivity extends AppCompatActivity {
 
         detenGps();
         if (parada == null) {
-            Parada nueva = new Parada(titulo, categoria, nota, rutaFoto, latitud, longitud,
-                    System.currentTimeMillis());
-            dbHelper.insertaParada(nueva);
+            ContentValues cv = new ContentValues();
+            cv.put(DatabaseHelper.TITULO, titulo);
+            cv.put(DatabaseHelper.CATEGORIA, categoria);
+            cv.put(DatabaseHelper.NOTA, nota);
+            cv.put(DatabaseHelper.FOTO, rutaFoto);
+            cv.put(DatabaseHelper.LATITUD, latitud);
+            cv.put(DatabaseHelper.LONGITUD, longitud);
+            cv.put(DatabaseHelper.FECHA, System.currentTimeMillis());
+            db.getWritableDatabase().insert(DatabaseHelper.TABLE_NAME, DatabaseHelper.TITULO, cv);
             Toast.makeText(this, R.string.parada_guardada, Toast.LENGTH_LONG).show();
         } else {
             if (!rutaFoto.equals(rutaFotoOriginal)) {
@@ -428,7 +430,7 @@ public class FormularioActivity extends AppCompatActivity {
             }
             parada.editar(titulo, categoria, nota);
             parada.setUbicacion(latitud, longitud);
-            dbHelper.actualizaParada(parada);
+            db.actualizaParada(parada);
             Toast.makeText(this, R.string.cambios_guardados, Toast.LENGTH_LONG).show();
         }
         finish();
@@ -449,7 +451,7 @@ public class FormularioActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        dbHelper.close();
+        db.close();
         super.onDestroy();
     }
 }

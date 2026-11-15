@@ -85,11 +85,6 @@ public class Parada {
         return foto != null && !foto.isEmpty();
     }
 
-    public String getFechaTexto() {
-        SimpleDateFormat formato = new SimpleDateFormat("d MMM yyyy", Locale.getDefault());
-        return formato.format(new Date(fecha));
-    }
-
     public String getFechaCompleta() {
         SimpleDateFormat formato = new SimpleDateFormat("d MMMM yyyy, HH:mm", Locale.getDefault());
         return formato.format(new Date(fecha));

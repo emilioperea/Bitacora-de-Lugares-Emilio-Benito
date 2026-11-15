@@ -20,7 +20,6 @@
     <string name="categoria">Catégorie</string>
     <string name="nota">Note</string>
     <string name="hint_nota">Que faut-il retenir de ce lieu ?</string>
-    <string name="guardar">Enregistrer</string>
     <string name="guardar_parada">Enregistrer l\'arrêt</string>
     <string name="cancelar">Annuler</string>
     <string name="guardar_cambios">Enregistrer les modifications</string>
@@ -36,6 +35,7 @@
     <string name="ver_detalle">Voir les détails</string>
     <string name="sin_nota">Sans note.</string>
     <string name="foto_parada">Photo de l\'arrêt</string>
+    <string name="sin_foto">Pas de photo</string>
     <string name="borrar_titulo">Supprimer cet arrêt ?</string>
     <string name="borrar_mensaje">Il sera supprimé du journal, ainsi que sa photo. Cette action est irréversible.</string>
     <string name="error_titulo">Écris un titre pour l\'arrêt.</string>

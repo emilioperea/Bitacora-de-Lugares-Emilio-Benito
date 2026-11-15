@@ -6,14 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.util.ArrayList;
-
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "bitacora";
-    public static final int DATABASE_VERSION = 1;
     public static final String TABLE_NAME = "paradas";
-    public static final String ID = "_id";
     public static final String TITULO = "titulo";
     public static final String CATEGORIA = "categoria";
     public static final String NOTA = "nota";
@@ -22,24 +18,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String LONGITUD = "longitud";
     public static final String FECHA = "fecha";
 
-    public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    public DatabaseHelper(Context context){
+        super(context, DATABASE_NAME, null, 1);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //"create table paradas (_id integer primary key autoincrement, titulo text not null, categoria text not null,
-        // nota text, foto text, latitud real, longitud real, fecha integer);"
-        db.execSQL("create table " + TABLE_NAME + " (" + ID + " integer primary key autoincrement, " +
+        //"create table paradas (_id integer primary key autoincrement, titulo text not null,
+        // categoria text not null, nota text, foto text, latitud real, longitud real, fecha integer);"
+        db.execSQL("create table " + TABLE_NAME + " (_id integer primary key autoincrement, " +
                 TITULO + " text not null, " + CATEGORIA + " text not null, " + NOTA + " text, " +
                 FOTO + " text, " + LATITUD + " real, " + LONGITUD + " real, " + FECHA + " integer);");
 
         long ahora = System.currentTimeMillis();
         long unDia = 24 * 60 * 60 * 1000L;
-        ContentValues cv = new ContentValues();
 
+        ContentValues cv = new ContentValues();
         cv.put(TITULO, "Atardecer en Cholula");
-        cv.put(CATEGORIA, "Paisaje");
+        cv.put(CATEGORIA, Parada.PAISAJE);
         cv.put(NOTA, "Subir a la pirámide como a las 6 pm. Con cielo despejado se ve el volcán.");
         cv.put(FOTO, "");
         cv.put(LATITUD, 19.05741);
@@ -47,18 +43,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put(FECHA, ahora - 12 * unDia);
         db.insert(TABLE_NAME, TITULO, cv);
 
-        cv.put(TITULO, "Tacos árabes en el centro");
-        cv.put(CATEGORIA, "Comida");
-        cv.put(NOTA, "El puesto de la esquina. Pedir con cebolla asada y salsa de chipotle.");
+        cv.put(TITULO, "El Patio y las Ranas");
+        cv.put(CATEGORIA, Parada.COMIDA);
+        cv.put(NOTA, "Taquería en la Av. 2 Poniente, en el centro. Más conocida como Las Ranas. Pedir los alambres.");
         cv.put(FOTO, "");
-        cv.put(LATITUD, 19.04331);
-        cv.put(LONGITUD, -98.19812);
+        cv.put(LATITUD, 19.04537);
+        cv.put(LONGITUD, -98.19876);
         cv.put(FECHA, ahora - 5 * unDia);
         db.insert(TABLE_NAME, TITULO, cv);
 
-        cv.put(TITULO, "Biblioteca de la universidad");
-        cv.put(CATEGORIA, "Escuela");
-        cv.put(NOTA, "Segundo piso, mesas junto a la ventana. Hay contactos para la laptop.");
+        cv.put(TITULO, "Edificio de posgrados de la UPAEP");
+        cv.put(CATEGORIA, Parada.ESCUELA);
+        cv.put(NOTA, "Sobre la calle 17 Sur, cerca del campus central de la UPAEP.");
         cv.put(FOTO, "");
         cv.put(LATITUD, 19.04690);
         cv.put(LONGITUD, -98.21208);
@@ -68,70 +64,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        android.util.Log.w(TABLE_NAME, "-Actualizando la base de datos. Se destruirá la información anterior");
         db.execSQL("drop table if exists " + TABLE_NAME);
         onCreate(db);
     }
 
-    public long insertaParada(Parada parada) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues cv = creaValores(parada);
-        return db.insert(TABLE_NAME, TITULO, cv);
-    }
-
-    public int actualizaParada(Parada parada) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues cv = creaValores(parada);
-        return db.update(TABLE_NAME, cv, ID + " = ?", new String[]{String.valueOf(parada.getId())});
-    }
-
-    public int borraParada(long id) {
-        SQLiteDatabase db = getWritableDatabase();
-        return db.delete(TABLE_NAME, ID + " = ?", new String[]{String.valueOf(id)});
-    }
-
     public Parada obtenParada(long id) {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, null, ID + " = ?",
+        Cursor cursor = db.query(TABLE_NAME, null, "_id = ?",
                 new String[]{String.valueOf(id)}, null, null, null);
         Parada parada = null;
         if (cursor.moveToFirst()) {
-            parada = leeParada(cursor);
+            parada = new Parada(
+                    cursor.getString(cursor.getColumnIndexOrThrow(TITULO)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(CATEGORIA)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(NOTA)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(FOTO)),
+                    cursor.getDouble(cursor.getColumnIndexOrThrow(LATITUD)),
+                    cursor.getDouble(cursor.getColumnIndexOrThrow(LONGITUD)),
+                    cursor.getLong(cursor.getColumnIndexOrThrow(FECHA))
+            );
+            parada.setId(id);
         }
         cursor.close();
         return parada;
     }
 
-    public ArrayList<Parada> obtenParadas(String busqueda, String categoria, boolean porNombre) {
-        ArrayList<Parada> paradas = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-
-        String patron = "%" + busqueda + "%";
-        String seleccion = "(" + TITULO + " like ? or " + NOTA + " like ?)";
-        String[] argumentos;
-        if (categoria == null) {
-            argumentos = new String[]{patron, patron};
-        } else {
-            seleccion = seleccion + " and " + CATEGORIA + " = ?";
-            argumentos = new String[]{patron, patron, categoria};
-        }
-
-        String orden;
-        if (porNombre)
-            orden = TITULO + " collate nocase asc";
-        else
-            orden = FECHA + " desc";
-
-        Cursor cursor = db.query(TABLE_NAME, null, seleccion, argumentos, null, null, orden);
-        if (cursor.moveToFirst()) {
-            do {
-                paradas.add(leeParada(cursor));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return paradas;
-    }
-
-    private ContentValues creaValores(Parada parada) {
+    public int actualizaParada(Parada parada) {
+        SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(TITULO, parada.getTitulo());
         cv.put(CATEGORIA, parada.getCategoria());
@@ -140,20 +100,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put(LATITUD, parada.getLatitud());
         cv.put(LONGITUD, parada.getLongitud());
         cv.put(FECHA, parada.getFecha());
-        return cv;
+        return db.update(TABLE_NAME, cv, "_id = ?", new String[]{String.valueOf(parada.getId())});
     }
 
-    private Parada leeParada(Cursor cursor) {
-        Parada parada = new Parada(
-                cursor.getString(cursor.getColumnIndexOrThrow(TITULO)),
-                cursor.getString(cursor.getColumnIndexOrThrow(CATEGORIA)),
-                cursor.getString(cursor.getColumnIndexOrThrow(NOTA)),
-                cursor.getString(cursor.getColumnIndexOrThrow(FOTO)),
-                cursor.getDouble(cursor.getColumnIndexOrThrow(LATITUD)),
-                cursor.getDouble(cursor.getColumnIndexOrThrow(LONGITUD)),
-                cursor.getLong(cursor.getColumnIndexOrThrow(FECHA))
-        );
-        parada.setId(cursor.getLong(cursor.getColumnIndexOrThrow(ID)));
-        return parada;
+    public int borraParada(long id) {
+        SQLiteDatabase db = getWritableDatabase();
+        return db.delete(TABLE_NAME, "_id = ?", new String[]{String.valueOf(id)});
     }
 }

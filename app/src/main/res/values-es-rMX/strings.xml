@@ -20,7 +20,6 @@
     <string name="categoria">Categoría</string>
     <string name="nota">Nota</string>
     <string name="hint_nota">¿Qué hay que recordar de este lugar?</string>
-    <string name="guardar">Guardar</string>
     <string name="guardar_parada">Guardar parada</string>
     <string name="cancelar">Cancelar</string>
     <string name="guardar_cambios">Guardar cambios</string>
@@ -36,6 +35,7 @@
     <string name="ver_detalle">Ver detalle</string>
     <string name="sin_nota">Sin nota.</string>
     <string name="foto_parada">Foto de la parada</string>
+    <string name="sin_foto">Sin foto</string>
     <string name="borrar_titulo">¿Borrar esta parada?</string>
     <string name="borrar_mensaje">Se eliminará de la bitácora junto con su foto. No se puede deshacer.</string>
     <string name="error_titulo">Escribe un título para la parada.</string>

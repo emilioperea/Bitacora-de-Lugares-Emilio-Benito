@@ -3,7 +3,6 @@ package com.aditusstudios.bitacoralugares;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -19,7 +18,6 @@ import androidx.activity.SystemBarStyle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
@@ -29,12 +27,12 @@ import com.google.android.material.appbar.MaterialToolbar;
 
 public class DetalleActivity extends AppCompatActivity {
     private MaterialToolbar tlbDetalle;
-    private ImageView imgFotoDetalle;
+    private ImageView imgFotoDetalle, imgSinFoto;
     private TextView txtCategoriaDetalle, txtTituloDetalle, txtFechaDetalle;
     private TextView txtCoordenadasDetalle, txtNotaDetalle;
     private Button btnVerMapa, btnEditar, btnBorrar;
 
-    private DatabaseHelper dbHelper;
+    private DatabaseHelper db = null;
     private Parada parada;
     private long idParada;
 
@@ -46,6 +44,7 @@ public class DetalleActivity extends AppCompatActivity {
 
         tlbDetalle = findViewById(R.id.tlbDetalle);
         imgFotoDetalle = findViewById(R.id.imgFotoDetalle);
+        imgSinFoto = findViewById(R.id.imgSinFoto);
         txtCategoriaDetalle = findViewById(R.id.txtCategoriaDetalle);
         txtTituloDetalle = findViewById(R.id.txtTituloDetalle);
         txtFechaDetalle = findViewById(R.id.txtFechaDetalle);
@@ -90,11 +89,11 @@ public class DetalleActivity extends AppCompatActivity {
         btnBorrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                confirmaBorrado();
+                borra();
             }
         });
 
-        dbHelper = new DatabaseHelper(this);
+        db = new DatabaseHelper(this);
         idParada = getIntent().getLongExtra("id", -1);
     }
 
@@ -105,41 +104,36 @@ public class DetalleActivity extends AppCompatActivity {
     }
 
     private void cargaParada() {
-        parada = dbHelper.obtenParada(idParada);
+        parada = db.obtenParada(idParada);
         if (parada == null) {
             finish();
             return;
         }
 
-        int colorFondo = ContextCompat.getColor(this, parada.getColorFondo());
-        int colorTexto = ContextCompat.getColor(this, parada.getColorTexto());
-
         txtCategoriaDetalle.setText(parada.getCategoriaTexto());
-        txtCategoriaDetalle.setBackgroundTintList(ColorStateList.valueOf(colorFondo));
-        txtCategoriaDetalle.setTextColor(colorTexto);
+        txtCategoriaDetalle.setBackgroundColor(getColor(parada.getColorFondo()));
+        txtCategoriaDetalle.setTextColor(getColor(parada.getColorTexto()));
         txtTituloDetalle.setText(parada.getTitulo());
         txtFechaDetalle.setText(parada.getFechaCompleta());
         txtCoordenadasDetalle.setText(parada.getCoordenadas());
 
         if (parada.getNota().isEmpty()) {
             txtNotaDetalle.setText(R.string.sin_nota);
-            txtNotaDetalle.setTextColor(ContextCompat.getColor(this, R.color.texto_secundario));
+            txtNotaDetalle.setTextColor(getColor(R.color.texto_secundario));
         } else {
             txtNotaDetalle.setText(parada.getNota());
-            txtNotaDetalle.setTextColor(ContextCompat.getColor(this, R.color.texto));
+            txtNotaDetalle.setTextColor(getColor(R.color.texto));
         }
 
-        Bitmap foto = UtilFotos.cargaFoto(parada.getFoto(), 1080);
+        Bitmap foto = UtilFotos.cargaFoto(parada.getFoto());
         if (foto != null) {
-            imgFotoDetalle.setBackgroundColor(Color.TRANSPARENT);
-            imgFotoDetalle.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imgFotoDetalle.setImageTintList(null);
             imgFotoDetalle.setImageBitmap(foto);
+            imgFotoDetalle.setVisibility(View.VISIBLE);
+            imgSinFoto.setVisibility(View.GONE);
         } else {
-            imgFotoDetalle.setBackgroundColor(colorFondo);
-            imgFotoDetalle.setScaleType(ImageView.ScaleType.CENTER);
-            imgFotoDetalle.setImageResource(R.drawable.ic_foto);
-            imgFotoDetalle.setImageTintList(ColorStateList.valueOf(colorTexto));
+            imgFotoDetalle.setVisibility(View.GONE);
+            imgSinFoto.setBackgroundColor(getColor(parada.getColorFondo()));
+            imgSinFoto.setVisibility(View.VISIBLE);
         }
     }
 
@@ -164,34 +158,33 @@ public class DetalleActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void confirmaBorrado() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.borrar_titulo);
-        builder.setMessage(R.string.borrar_mensaje);
-        builder.setPositiveButton(R.string.borrar, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                borraParada();
-            }
-        });
-        builder.setNegativeButton(R.string.cancelar, null);
-
-        AlertDialog dialogo = builder.create();
-        dialogo.show();
-        dialogo.getButton(AlertDialog.BUTTON_POSITIVE)
-                .setTextColor(ContextCompat.getColor(this, R.color.peligro));
+    private void borra() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.borrar_titulo)
+                .setMessage(R.string.borrar_mensaje)
+                .setPositiveButton(R.string.borrar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        procesaBorrado();
+                    }
+                })
+                .setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                }).show();
     }
 
-    private void borraParada() {
+    private void procesaBorrado() {
         UtilFotos.borraFoto(parada.getFoto());
-        dbHelper.borraParada(parada.getId());
+        db.borraParada(parada.getId());
         Toast.makeText(this, R.string.parada_borrada, Toast.LENGTH_LONG).show();
         finish();
     }
 
     @Override
     protected void onDestroy() {
-        dbHelper.close();
+        db.close();
         super.onDestroy();
     }
 }
